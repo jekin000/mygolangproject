@@ -1,11 +1,21 @@
 package main
 
 import (
-	"fmt"
-	"jekin000/mygoproject/pkg/gologger"
+	"log"
+	"os"
 )
 
-func main(){
-	fmt.Println("Hello World!~~haha")
-	gologger.Hello()
+func main() {
+	fileName := "/var/log/mydebug.log"
+	logFile, err := os.Create(fileName)
+	defer logFile.Close()
+	if err != nil {
+		log.Fatalln("Open file failed")
+	}
+	debugLog := log.New(logFile, "[Debug]", log.Llongfile)
+	debugLog.Println("A debug msg here")
+	debugLog.SetPrefix("[Info]")
+	debugLog.Println("A info msg here")
+	debugLog.SetFlags(debugLog.Flags() | log.LstdFlags)
+	debugLog.Println("A different prefix")
 }
