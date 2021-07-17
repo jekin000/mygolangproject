@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"jekin000/mygoproject/pkg/gologger"
+)
 
 func main(){
 	fmt.Println("Hello World!")
+	gologger.Hello()
 }
