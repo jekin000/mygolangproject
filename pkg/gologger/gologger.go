@@ -6,42 +6,53 @@ import (
 	//"io"
 	"os"
 	//"reflect"
+	"bytes"
 )
+
+var gLogger *Logger
 
 type Logger struct{
 	ioWriter *os.File
-	debugLogger *log.Logger
+	DebugLogger *log.Logger
 	infoLogger *log.Logger
+	Buf *bytes.Buffer
 }
 
-func InitLogger() *Logger{
+func GetLogger() *Logger {
+	return gLogger
+}
+
+func InitLogger() {
 	fileName := "/var/log/mydebug.log"
 	logFile, err := os.OpenFile(fileName,os.O_APPEND|os.O_WRONLY,os.ModeAppend)
 	if err != nil {
 		log.Fatalln("Open file failed,%s",err)
 	}
-	debugLogger := log.New(logFile, "[Debug]",log.Llongfile|log.LstdFlags)
+
+	buf         := bytes.NewBufferString("")
+	debugLogger := log.New(buf, "[Debug]",log.Llongfile|log.LstdFlags)
 	infoLogger  := log.New(logFile, "[Info ]",log.Llongfile|log.LstdFlags)
 
 	//fmt.Println(reflect.TypeOf(infoLogger))
 
 	logger := &Logger{
 		ioWriter : logFile,
-		debugLogger : debugLogger,
+		DebugLogger : debugLogger,
 		infoLogger  : infoLogger,
+		Buf	    : buf,
 	}
 
-	return logger
+	gLogger = logger
 }
 
-func (l *Logger) Close(){
-	l.ioWriter.Close()
+func Close(){
+	gLogger.ioWriter.Close()
 }
 
-func (l *Logger) Debug (str string){
-	l.debugLogger.Println(str)
+func Debug () func (format string,v ...interface{}){
+	return gLogger.DebugLogger.Printf
 }
 
-func (l *Logger) Info (str string){
-	l.infoLogger.Println(str)
+func Info (str string){
+	gLogger.infoLogger.Println(str)
 }

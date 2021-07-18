@@ -7,7 +7,10 @@ import (
 
 
 func main() {
-	logger := gologger.InitLogger()
-	logger.Debug(fmt.Sprintf("it is debug,%d",1))
-	logger.Info(fmt.Sprintf ("it is info ,%d",2))
+	gologger.InitLogger()
+	//gologger.Debug(fmt.Sprintf("it is debug,%d",1))
+	//gologger.Info(fmt.Sprintf ("it is info ,%d",2))
+	gologger.Debug()("%s is pretty.","Tom")
+	gologger.Debug()("I think he can do it")
+	fmt.Println(gologger.GetLogger().Buf)
 }
