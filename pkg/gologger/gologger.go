@@ -9,6 +9,21 @@ import (
 	"bytes"
 )
 
+type LoggingType int32
+
+const (
+	DEBUG  LoggingType = 0
+	INFO   LoggingType = 1
+	WARN   LoggingType = 2
+	ERROR  LoggingType = 3
+	ROTATE LoggingType = 4
+	UPDATE LoggingType = 5
+)
+
+type LogData struct {
+	DataType LoggingType
+	Data	 string
+}
 var gLogger *Logger
 
 type Logger struct{
@@ -16,6 +31,7 @@ type Logger struct{
 	DebugLogger *log.Logger
 	infoLogger *log.Logger
 	Buf *bytes.Buffer
+	Chan chan  LogData
 }
 
 func GetLogger() *Logger {
@@ -40,6 +56,7 @@ func InitLogger() {
 		DebugLogger : debugLogger,
 		infoLogger  : infoLogger,
 		Buf	    : buf,
+		Chan	    : make(chan LogData),
 	}
 
 	gLogger = logger

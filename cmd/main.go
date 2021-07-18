@@ -13,4 +13,6 @@ func main() {
 	gologger.Debug()("%s is pretty.","Tom")
 	gologger.Debug()("I think he can do it")
 	fmt.Println(gologger.GetLogger().Buf)
+	gologger.Debug()("It is ok")
+	fmt.Println(gologger.GetLogger().Buf)
 }
