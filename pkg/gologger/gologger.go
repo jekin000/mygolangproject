@@ -1,7 +1,7 @@
 package gologger
 
 import (
-	//"fmt"
+	"fmt"
 	"log"
 	//"io"
 	"os"
@@ -31,7 +31,7 @@ type Logger struct{
 	DebugLogger *log.Logger
 	infoLogger *log.Logger
 	Buf *bytes.Buffer
-	Chan chan  LogData
+	Chan chan  *LogData
 }
 
 func GetLogger() *Logger {
@@ -46,7 +46,7 @@ func InitLogger() {
 	}
 
 	buf         := bytes.NewBufferString("")
-	debugLogger := log.New(buf, "[Debug]",log.Llongfile|log.LstdFlags)
+	debugLogger := log.New(logFile, "[Debug]",log.Llongfile|log.LstdFlags)
 	infoLogger  := log.New(logFile, "[Info ]",log.Llongfile|log.LstdFlags)
 
 	//fmt.Println(reflect.TypeOf(infoLogger))
@@ -56,7 +56,7 @@ func InitLogger() {
 		DebugLogger : debugLogger,
 		infoLogger  : infoLogger,
 		Buf	    : buf,
-		Chan	    : make(chan LogData),
+		Chan	    : make(chan *LogData),
 	}
 
 	gLogger = logger
@@ -66,10 +66,25 @@ func Close(){
 	gLogger.ioWriter.Close()
 }
 
-func Debug () func (format string,v ...interface{}){
-	return gLogger.DebugLogger.Printf
+func Debug (str string) {
+	logdata  := &LogData {
+		DataType : DEBUG,
+		Data     : str,
+	}
+	gLogger.Chan <- logdata
 }
 
 func Info (str string){
 	gLogger.infoLogger.Println(str)
+}
+
+func StartRecorder(){
+	go func (){
+		for {
+			select{
+				case logdata :=  <- gLogger.Chan:
+					fmt.Println(logdata.Data)
+			}
+		}
+	}()
 }

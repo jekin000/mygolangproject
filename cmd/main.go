@@ -8,11 +8,10 @@ import (
 
 func main() {
 	gologger.InitLogger()
+	gologger.StartRecorder()
 	//gologger.Debug(fmt.Sprintf("it is debug,%d",1))
 	//gologger.Info(fmt.Sprintf ("it is info ,%d",2))
-	gologger.Debug()("%s is pretty.","Tom")
-	gologger.Debug()("I think he can do it")
-	fmt.Println(gologger.GetLogger().Buf)
-	gologger.Debug()("It is ok")
-	fmt.Println(gologger.GetLogger().Buf)
+	gologger.Debug(fmt.Sprintf ("%s is busy","Tracy"))
+	gologger.Debug("I think he can do it")
+	gologger.Debug("It is ok")
 }
