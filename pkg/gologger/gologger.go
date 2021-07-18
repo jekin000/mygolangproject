@@ -1,7 +1,7 @@
 package gologger
 
 import (
-	"fmt"
+        //"fmt"
 	"log"
 	//"io"
 	"os"
@@ -46,7 +46,7 @@ func InitLogger() {
 	}
 
 	buf         := bytes.NewBufferString("")
-	debugLogger := log.New(logFile, "[Debug]",log.Llongfile|log.LstdFlags)
+	debugLogger := log.New(logFile, "[Debug]",log.LstdFlags)
 	infoLogger  := log.New(logFile, "[Info ]",log.Llongfile|log.LstdFlags)
 
 	//fmt.Println(reflect.TypeOf(infoLogger))
@@ -56,7 +56,7 @@ func InitLogger() {
 		DebugLogger : debugLogger,
 		infoLogger  : infoLogger,
 		Buf	    : buf,
-		Chan	    : make(chan *LogData),
+		Chan	    : make(chan *LogData,10),
 	}
 
 	gLogger = logger
@@ -83,8 +83,25 @@ func StartRecorder(){
 		for {
 			select{
 				case logdata :=  <- gLogger.Chan:
-					fmt.Println(logdata.Data)
+					if logdata.DataType == ROTATE {
+						gLogger.ioWriter.Close()
+						logFile, err := os.OpenFile("/var/log/mydebug.log",os.O_APPEND|os.O_WRONLY,os.ModeAppend)
+						if  err != nil{
+							log.Fatalln("Reopen file failed")
+						}
+						gLogger.DebugLogger = log.New(logFile,"[Debug]",log.LstdFlags)
+					} else {
+						gLogger.DebugLogger.Println(logdata.Data)
+					}
 			}
 		}
 	}()
+}
+
+func LogRotate(){
+	logdata  := &LogData {
+		DataType : ROTATE,
+		Data     : "",
+	}
+	gLogger.Chan <- logdata
 }
