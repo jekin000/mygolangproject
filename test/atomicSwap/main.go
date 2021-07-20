@@ -35,10 +35,10 @@ func initSwap() {
 	px.y = 2000
 	px.z = 3000
 
+	pSet = &py
 	pGet = atomic.SwapPointer(unsafepL,
 		unsafe.Pointer(&py))
 
-	pSet = &py
 }
 
 func getStruct() *L {
